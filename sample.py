@@ -69,8 +69,8 @@ for row in query_job:
 for user_id,device_map in user_device_map.items():
     #print(user_id,device_map)
     maximum_device_percentage=0
-    for device_id,duration in device_map:
-        #print(device_id,duration)
+    for device_id in device_map:
+        duration=device_map[device_id]
         percentage=(float(duration)/user_map[user_id])*100
         if user_id in user_device_percentage_map:
             user_device_percentage_map[user_id][device_id]=percentage
@@ -84,12 +84,20 @@ for user_id,device_map in user_device_map.items():
         
 for user_id in user_map.keys():
     total_video_per_devices=[]
-    for device_id,duration in user_device_map[user_id]:
+    device_video_percent=[]
+    for device_id in user_device_map[user_id]:
         video_per_device={
             "device":device_id,
-            "count":duration
+            "count":user_device_map[user_id][device_id]
         }
         total_video_per_devices.append(video_per_device)
+    
+    for device_id in user_device_percentage_map[user_id]:
+        device_percentage={
+            "device":device_id,
+            "percentage":user_device_percentage_map[user_id][device_id]
+        }
+        device_video_percent.append(device_percentage)
 
     user_sharing_doc={
         "user_id":user_id,
@@ -97,6 +105,7 @@ for user_id in user_map.keys():
         "week": 1,
         "total_video_hours_watched" : user_map[user_id],
         "total_video_per_devices": total_video_per_devices,
+        "device_video_percentage":device_video_percent,
         "maximum_device_percentage":user_maximum_device_percentage[user_id]
     }
     print(user_sharing_doc)
